@@ -11,21 +11,20 @@ import services.CodeCompiler
 
 @Singleton
 class CodeController @Inject() extends Controller{
-  
+
   val CODE_WORKING_DIRECTORY = "D:/scala/code/";
-  
+
   implicit val rds = (
     (__ \ 'name).read[String]
-  ) 
-  
-  
+  )
+
   def getCode = Action{
     Ok("Hello there")
     }
-  
+
   def sayHello = Action { request =>
     request.body.asJson.map { json =>
-      json.validate[(String)].map{ 
+      json.validate[(String)].map{
         case (name) => Ok("Hello " + name)
       }.recoverTotal{
         e => BadRequest("Detected error:"+ JsError.toFlatJson(e))
@@ -34,8 +33,8 @@ class CodeController @Inject() extends Controller{
       BadRequest("Expecting Json data")
     }
   }
-  
-  
+
+
   def upload = Action(parse.multipartFormData) { request =>
   request.body.file("code").map { code =>
     import java.io.File
@@ -52,6 +51,6 @@ class CodeController @Inject() extends Controller{
     BadRequest("File missing")
   }
 }
-  
-  
+
+
 }
