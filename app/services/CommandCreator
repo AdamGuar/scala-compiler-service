@@ -1,0 +1,19 @@
+package services
+
+object CommandCreator {
+
+  def createCommand(commandName: String, args[String]): String = {
+    println("OSSystem: " + System.getProperty("os.name").toLowerCase())
+    var cmd = commandName
+    if (System.getProperty("os.name").toLowerCase().contains("win")) {
+      commandName += ".bat "
+    }
+    for(arg <- args) {
+      cmd += " " +arg
+    }
+    println("Return command: " + cmd)
+
+    return cmd;
+  }
+
+}

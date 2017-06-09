@@ -9,6 +9,7 @@ import play.api.libs.functional.syntax._
 import services.FilenameGenerator
 import services.CodeCompiler
 import model.CodeEntity
+import services.FileRunner
 
 @Singleton
 class CodeController @Inject() extends Controller{
@@ -30,7 +31,12 @@ class CodeController @Inject() extends Controller{
     val returnedFile=compiler.compile()
     if(returnedFile==null) BadRequest("Compilation Fail")
     println("Returned file = " + returnedFile.getAbsolutePath)
-    Ok("File uploaded and compiled")
+    val output = FileRunner.run(returnedFile)
+    if(output._3 != 0) {
+      BadRequest("Exit code != 0")
+    } else {
+      Ok("File uploaded, compiled and run. Output:" + output._1)
+    }
   }.getOrElse {
     BadRequest("File missing")
   }
