@@ -1,6 +1,3 @@
 #CodeController actions
-GET   /code       			controllers.CodeController.getCode
-
-POST   /code       			controllers.CodeController.sayHello
 
 POST  /code/upload          controllers.CodeController.upload()

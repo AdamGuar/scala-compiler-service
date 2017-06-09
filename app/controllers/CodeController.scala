@@ -8,9 +8,11 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import services.FilenameGenerator
 import services.CodeCompiler
+import model.CodeEntity
 
 @Singleton
 class CodeController @Inject() extends Controller{
+<<<<<<< HEAD
 
   val CODE_WORKING_DIRECTORY = "D:/scala/code/";
 
@@ -35,6 +37,14 @@ class CodeController @Inject() extends Controller{
   }
 
 
+=======
+  
+  val CODE_WORKING_DIRECTORY = System.getProperty("user.dir") + "/code/";
+  
+
+  
+  
+>>>>>>> devel
   def upload = Action(parse.multipartFormData) { request =>
   request.body.file("code").map { code =>
     import java.io.File
@@ -42,10 +52,14 @@ class CodeController @Inject() extends Controller{
     val contentType = code.contentType
     //code.ref.moveTo(new File(s"/tmp/code/$filename"))
     val generator = new FilenameGenerator
-    val file:File = new File(CODE_WORKING_DIRECTORY+generator.generateFileName());
+    val fileID = generator.generateFileName()
+    val file:File = new File(CODE_WORKING_DIRECTORY+fileID);
     code.ref.moveTo(file)
-    val compiler = new CodeCompiler(file)
-    compiler.compile()
+    val codeEntity = new CodeEntity(fileID,file);
+    val compiler = new CodeCompiler(codeEntity,new File(System.getProperty("user.dir")))  
+    val returnedFile=compiler.compile()
+    if(returnedFile==null) BadRequest("Compilation Fail")
+    println("Returned file = " + returnedFile.getAbsolutePath)
     Ok("File uploaded and compiled")
   }.getOrElse {
     BadRequest("File missing")
