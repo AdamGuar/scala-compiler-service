@@ -9,14 +9,12 @@ import play.api.libs.functional.syntax._
 import services.FilenameGenerator
 import services.CodeCompiler
 import model.CodeEntity
+import services.FileRunner
 
 @Singleton
 class CodeController @Inject() extends Controller{
   
   val CODE_WORKING_DIRECTORY = System.getProperty("user.dir") + "/code/";
-  
-
-  
   
   def upload = Action(parse.multipartFormData) { request =>
   request.body.file("code").map { code =>
@@ -33,11 +31,14 @@ class CodeController @Inject() extends Controller{
     val returnedFile=compiler.compile()
     if(returnedFile==null) BadRequest("Compilation Fail")
     println("Returned file = " + returnedFile.getAbsolutePath)
-    Ok("File uploaded and compiled")
+    val output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
+    if(output._3 != 0) {
+      BadRequest("Exit code != 0")
+    } else {
+      Ok("File uploaded, compiled and run. Output:" + output._1)
+    }
   }.getOrElse {
     BadRequest("File missing")
   }
 }
-  
-  
 }
