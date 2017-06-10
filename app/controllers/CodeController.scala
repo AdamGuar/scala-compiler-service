@@ -31,7 +31,7 @@ class CodeController @Inject() extends Controller{
     val returnedFile=compiler.compile()
     if(returnedFile==null) BadRequest("Compilation Fail")
     println("Returned file = " + returnedFile.getAbsolutePath)
-    val output = FileRunner.run(returnedFile)
+    val output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
     if(output._3 != 0) {
       BadRequest("Exit code != 0")
     } else {

@@ -2,14 +2,17 @@ package services
 
 object CommandCreator {
 
-  def createCommand(commandName: String, args[String]): String = {
+  def createCommand(commandName: String, args: List[String]): String = {
     println("OSSystem: " + System.getProperty("os.name").toLowerCase())
     var cmd = commandName
     if (System.getProperty("os.name").toLowerCase().contains("win")) {
-      commandName += ".bat "
+      cmd = cmd + ".bat "
     }
     for(arg <- args) {
-      cmd += " " +arg
+      cmd = cmd + " " + arg
+    }
+    if(cmd.contains(".scala")) {
+      cmd = cmd.drop(6)
     }
     println("Return command: " + cmd)
 
