@@ -49,25 +49,12 @@ class CodeController @Inject() extends Controller{
         "status" ->"OK",
         "message" ->"File uploaded, compiled and run",
         "codeID" -> (fileID),
-        "output" -> (Json.arr(output._1.toArray[String]))
+        "output" -> (Json.arr(output._1.toArray[String])),
+        "similarities" -> (new CodeComparator(fileID).compare())       
       ))
     }
   }.getOrElse {
     BadRequest("File missing")
   }
 }
-
-    /**
-      * GET /code/compare endpoint
-      *
-      * @author Karol Skóra i Michał Suski
-      *
-      */
-  //TODO: Fix method body
-    /*def compare(id: String) = Action {
-      val comparator = new CodeComparator(id)
-      val similarities = comparator.compare()
-
-      //TODO zwrocic jsona
-    }*/
 }
