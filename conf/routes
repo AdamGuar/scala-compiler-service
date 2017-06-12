@@ -1,4 +1,4 @@
 #CodeController actions
 
 POST  /code/upload          controllers.CodeController.upload()
-GET  /code/compare          controllers.CodeController.compare(id: String)
+#GET  /code/compare          controllers.CodeController.compare(id: String)

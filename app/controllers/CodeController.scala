@@ -63,10 +63,11 @@ class CodeController @Inject() extends Controller{
       * @author Karol Skóra i Michał Suski
       *
       */
-    def compare(id: String) = Action {
+  //TODO: Fix method body
+    /*def compare(id: String) = Action {
       val comparator = new CodeComparator(id)
       val similarities = comparator.compare()
 
       //TODO zwrocic jsona
-    }
+    }*/
 }

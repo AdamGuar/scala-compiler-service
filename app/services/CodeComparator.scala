@@ -9,10 +9,11 @@ package services
   *
   */
 class CodeComparator(codeID: String) {
-  private var codeID = codeID
+  //TODO: Fix class body
+/*  private var codeID = codeID
 
   def compare(): Map[String, Float] = {
     //TODO
   }
-
+*/
 }
