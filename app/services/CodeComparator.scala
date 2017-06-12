@@ -11,7 +11,7 @@ package services
 class CodeComparator(codeID: String) {
   private var codeID = codeID
 
-  def compare(): Array[Float] = {
+  def compare(): Map[String, Float] = {
     //TODO
   }
 

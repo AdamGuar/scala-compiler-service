@@ -65,6 +65,8 @@ class CodeController @Inject() extends Controller{
       */
     def compare(id: String) = Action {
       val comparator = new CodeComparator(id)
-      val simList = comparator.compare()
+      val similarities = comparator.compare()
+
+      //TODO zwrocic jsona
     }
 }
