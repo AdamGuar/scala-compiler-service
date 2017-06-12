@@ -10,12 +10,22 @@ import services.FilenameGenerator
 import services.CodeCompiler
 import model.CodeEntity
 import services.FileRunner
+import services.CodeComparator
 
+  /**
+  * Controller Class
+  */
 @Singleton
 class CodeController @Inject() extends Controller{
   
   val CODE_WORKING_DIRECTORY = System.getProperty("user.dir") + "/code/";
-  
+
+    /**
+      * POST /code/upload endpoint
+      *
+      * @author Adam Woźniak i Karol Skóra
+      *
+      */
   def upload = Action(parse.multipartFormData) { request =>
   request.body.file("code").map { code =>
     import java.io.File
@@ -35,10 +45,26 @@ class CodeController @Inject() extends Controller{
     if(output._3 != 0) {
       BadRequest("Exit code != 0")
     } else {
-      Ok("File uploaded, compiled and run. Output:" + output._1)
+      Ok(Json.obj(
+        "status" ->"OK",
+        "message" ->"File uploaded, compiled and run",
+        "codeID" -> (fileID),
+        "output" -> (Json.arr(output._1.toArray[String]))
+      ))
     }
   }.getOrElse {
     BadRequest("File missing")
   }
 }
+
+    /**
+      * GET /code/compare endpoint
+      *
+      * @author Karol Skóra i Michał Suski
+      *
+      */
+    def compare(id: String) = Action {
+      val comparator = new CodeComparator(id)
+      val simList = comparator.compare()
+    }
 }
