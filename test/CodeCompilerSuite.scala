@@ -10,7 +10,7 @@ import model.CodeEntity
 
 class CodeCompilerSuite extends JUnitSuite{
   
-  val CODE_TEST_WORKING_DIRECTORY = System.getProperty("user.dir") + "/code/tests/"
+  val CODE_TEST_WORKING_DIRECTORY = System.getProperty("user.dir") + "/mocks/"
   val OK_NAME = "Ok.scala"
   val WRONG_NAME = "Wrong.scala"
   
@@ -20,7 +20,7 @@ class CodeCompilerSuite extends JUnitSuite{
   
   
  @Before def initialize() {
-   var correctCodeEntity : CodeEntity = new CodeEntity("Ok.scala",new File(CODE_TEST_WORKING_DIRECTORY+OK_NAME))
+   var correctCodeEntity : CodeEntity = new CodeEntity(OK_NAME,new File(CODE_TEST_WORKING_DIRECTORY+OK_NAME))
    codeCompilerWithCorrectFile  = new CodeCompiler(correctCodeEntity,new File(CODE_TEST_WORKING_DIRECTORY))
    var wrongCodeEntity: CodeEntity = new CodeEntity(WRONG_NAME,new File(CODE_TEST_WORKING_DIRECTORY))
    codeCompilerWithWrongFile  = new CodeCompiler(wrongCodeEntity,new File(CODE_TEST_WORKING_DIRECTORY))
