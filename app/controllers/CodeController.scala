@@ -3,7 +3,7 @@ package controllers
 import javax.inject._
 import play.api._
 import play.api.mvc._
-
+import java.io.File
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import services.FilenameGenerator
@@ -11,7 +11,10 @@ import services.CodeCompiler
 import model.CodeEntity
 import services.FileRunner
 import services.CodeComparator
-
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.libs.Files._
+import java.lang.Thread._
+import scala.collection.mutable.ListBuffer
   /**
   * Controller Class
   */
@@ -26,9 +29,10 @@ class CodeController @Inject() extends Controller{
       * @author Adam Woźniak i Karol Skóra
       *
       */
-  def upload = Action(parse.multipartFormData) { request =>
-  request.body.file("code").map { code =>
-    import java.io.File
+  def upload = Action(parse.multipartFormData) { 
+    
+    request => request.body.file("code").map { code =>
+  
     val filename = code.filename
     val contentType = code.contentType
     //code.ref.moveTo(new File(s"/tmp/code/$filename"))
@@ -49,25 +53,84 @@ class CodeController @Inject() extends Controller{
         "status" ->"OK",
         "message" ->"File uploaded, compiled and run",
         "codeID" -> (fileID),
-        "output" -> (Json.arr(output._1.toArray[String]))
+        "output" -> (Json.arr(output._1.toArray[String])),
+        "similarities" -> (new CodeComparator(fileID).compare())       
       ))
     }
   }.getOrElse {
     BadRequest("File missing")
   }
 }
-
-    /**
-      * GET /code/compare endpoint
+  
+  
+  
+      /**
+      * POST /code/batchUpload endpoint
       *
-      * @author Karol Skóra i Michał Suski
+      * @author Dawid Zych
       *
       */
-  //TODO: Fix method body
-    /*def compare(id: String) = Action {
-      val comparator = new CodeComparator(id)
-      val similarities = comparator.compare()
-
-      //TODO zwrocic jsona
-    }*/
+  
+    def handleFile = (file : FilePart[TemporaryFile], resultList : ListBuffer[Result]) => {
+      val fileID = new FilenameGenerator().generateFileName()
+      val realFile:File = new File(CODE_WORKING_DIRECTORY+fileID)  
+      val codeEntity = new CodeEntity(fileID,realFile)
+      
+      var message = "File uploaded, compiled and run"
+      var status = "OK"
+      var codeID = fileID
+     
+      file.ref.moveTo(realFile)
+      
+      val wasSuccess = new CodeCompiler(codeEntity,new File(System.getProperty("user.dir"))).compile()
+      if(wasSuccess == null) {
+        status = "FAIL"
+        message ="Compilation error."
+      }
+      
+      val output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
+      if(output._3 != 0) {
+        status = "FAIL"
+        message = "Execution error, exit code != 0"
+      }
+      
+      resultList.synchronized {
+        resultList += new Result(status, message, codeID, Json.arr(output._1.toArray[String]), new CodeComparator(fileID).compare())
+      }
+    }
+    
+    case class Result(status: String, message: String, codeID: String, output: JsArray, similarities: JsValue)
+  
+    implicit val resultWrites = new Writes[Result] {
+    def writes(result: Result) = Json.obj(
+    "status" -> result.status,
+    "message" -> result.message,
+    "codeID" -> result.codeID,
+    "output" -> result.output,
+    "similarities" -> result.similarities
+    )
+    }
+  
+    def batchUpload = Action(parse.multipartFormData) { 
+      request => {
+      var resultList = new ListBuffer[Result]()
+      val files = request.body.files
+      
+      var threads = new Array[Thread](files.length);
+      
+      for ((file,index) <- files.zipWithIndex) { 
+        threads(index) = new Thread{
+          override def run() {
+            handleFile(file, resultList)
+          }
+        }        
+        threads(index).start();
+      }   
+      for(thread <- threads) {
+        thread.join();
+      }
+      Ok(Json.toJson(resultList.toList))
+    }
+  }
 }
+

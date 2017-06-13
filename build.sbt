@@ -11,6 +11,8 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "junit" % "junit" % "4.8.1" % "test"
+  "junit" % "junit" % "4.8.1" % "test",
+  "info.debatty" % "java-string-similarity" % "0.24"
+  
 )
 
