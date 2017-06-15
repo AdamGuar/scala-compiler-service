@@ -79,23 +79,29 @@ class CodeController @Inject() extends Controller{
       var message = "File uploaded, compiled and run"
       var status = "OK"
       var codeID = fileID
+      var output: (List[String], List[String], Int) = (List(""), List(""), -1)
      
       file.ref.moveTo(realFile)
       
-      val wasSuccess = new CodeCompiler(codeEntity,new File(System.getProperty("user.dir"))).compile()
-      if(wasSuccess == null) {
-        status = "FAIL"
-        message ="Compilation error."
+      try {
+         new CodeCompiler(codeEntity,new File(System.getProperty("user.dir"))).compile()
+      } catch {
+        case e: Exception => {
+          status = "FAIL"
+          message = "Compilation Error:" + e
+        }
       }
-      
-      val output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
-      if(output._3 != 0) {
-        status = "FAIL"
-        message = "Execution error, exit code != 0"
-      }
-      
-      resultList.synchronized {
-        resultList += new Result(status, message, codeID, Json.arr(output._1.toArray[String]), new CodeComparator(fileID).compare())
+    
+      try {
+        output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
+      } catch {
+        case e: Exception => {
+          status = "FAIL"
+          message = "Program execution error: " + e
+        }} finally {
+           resultList.synchronized {
+           resultList += new Result(status, message, codeID, Json.arr(output._1.toArray[String]), new CodeComparator(fileID).compare())
+         }
       }
     }
     
