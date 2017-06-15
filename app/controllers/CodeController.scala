@@ -104,7 +104,12 @@ class CodeController @Inject() extends Controller{
          }
       }
     }
-    
+    /**
+      * POST /code/upload endpoint
+      *
+      * @author Michał Suski
+      *
+      */
     case class Result(status: String, message: String, codeID: String, output: JsArray, similarities: JsValue)
   
     implicit val resultWrites = new Writes[Result] {
@@ -116,7 +121,12 @@ class CodeController @Inject() extends Controller{
     "similarities" -> result.similarities
     )
     }
-  
+    /**
+      * POST /code/upload endpoint
+      *
+      * @author Dawid Zych
+      *
+      */
     def batchUpload = Action(parse.multipartFormData) { 
       request => {
       var resultList = new ListBuffer[Result]()
