@@ -10,9 +10,7 @@ import model.CodeEntity
  * @param CodeEntity Given entity will be compiled by compile() method
  * @param File Given parameter provides working directory path for compile() method
  */
-class CodeCompiler(codeEntityParam: CodeEntity , appWorkingDir: File) {
-  var codeEntity: CodeEntity = codeEntityParam
-  var workingDir: File = appWorkingDir
+class CodeCompiler() {
   
   
   /**
@@ -22,7 +20,7 @@ class CodeCompiler(codeEntityParam: CodeEntity , appWorkingDir: File) {
    * @author Adam
    * @return .class File which can be run using "scala FILE_NAME" command, in case of compilation fail it returns null
    */
-  def compile() : File ={
+  def compile(codeEntity: CodeEntity , workingDir: File) : File ={
     println("Code entity: "+codeEntity.file.toString())
     val targetDir = new File(workingDir+"/code-target/"+codeEntity.id)
     targetDir.mkdirs()

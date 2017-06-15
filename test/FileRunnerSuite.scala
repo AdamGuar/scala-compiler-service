@@ -28,7 +28,7 @@ class FileRunnerSuite extends JUnitSuite{
   @Test
   def testShouldReturnNonZeroExitCodeForIncorectFile(){
     val output = FileRunner.run(incorectCodeEntity, appDirectory)
-    assertEquals("Shoudl return 1 for incorrect file", 1, output._3)
+    assertEquals("Should return 1 for incorrect file", 1, output._3)
   }
 
   @Test

@@ -13,11 +13,10 @@ import model.CodeEntity
   *
   */
 
-object FileRunner {
+class FileRunner {
 
   /**
     * Method run previously compiled CodeEnitity object and returns output, errors and exit code
-    * @author Karol Skóra
     * @param CodeEntity CodeEntity object which was compiled with success and is ready to run
     * @param appDir File object with application working directory, will be used to create target directory for the process
     * @return (outputList,errorList,exitCode) touple
@@ -48,7 +47,6 @@ object CommandCreator {
 
   /**
     * Method takes command string as parameter, checks user's operating system and create full command with or without extension
-    * @author Karol Skóra
     * @param commandName String object with command name without any extensions
     * @return full command name
     */

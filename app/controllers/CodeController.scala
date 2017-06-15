@@ -20,32 +20,34 @@ import scala.collection.mutable.ListBuffer
   */
 @Singleton
 class CodeController @Inject() extends Controller{
-  
-  val CODE_WORKING_DIRECTORY = System.getProperty("user.dir") + "/code/";
 
+    val CODE_WORKING_DIRECTORY = System.getProperty("user.dir") + "/code/"
+    val generator = new FilenameGenerator
+    val compiler = new CodeCompiler
+    val fileRunner = new FileRunner
     /**
       * POST /code/upload endpoint
       *
       * @author Adam Woźniak i Karol Skóra
       *
       */
-  def upload = Action(parse.multipartFormData) { 
+
+
+    def upload = Action(parse.multipartFormData) {
     
     request => request.body.file("code").map { code =>
   
     val filename = code.filename
     val contentType = code.contentType
     //code.ref.moveTo(new File(s"/tmp/code/$filename"))
-    val generator = new FilenameGenerator
     val fileID = generator.generateFileName()
     val file:File = new File(CODE_WORKING_DIRECTORY+fileID);
     code.ref.moveTo(file)
     val codeEntity = new CodeEntity(fileID,file);
-    val compiler = new CodeCompiler(codeEntity,new File(System.getProperty("user.dir")))  
-    val returnedFile=compiler.compile()
+    val returnedFile=compiler.compile(codeEntity,new File(System.getProperty("user.dir")))
     if(returnedFile==null) BadRequest("Compilation Fail")
     println("Returned file = " + returnedFile.getAbsolutePath)
-    val output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
+    val output = fileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
     if(output._3 != 0) {
       BadRequest("Exit code != 0")
     } else {
@@ -84,7 +86,7 @@ class CodeController @Inject() extends Controller{
       file.ref.moveTo(realFile)
       
       try {
-         new CodeCompiler(codeEntity,new File(System.getProperty("user.dir"))).compile()
+         compiler.compile(codeEntity,new File(System.getProperty("user.dir")))
       } catch {
         case e: Exception => {
           status = "FAIL"
@@ -93,7 +95,7 @@ class CodeController @Inject() extends Controller{
       }
     
       try {
-        output = FileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
+        output = fileRunner.run(codeEntity, new File(System.getProperty("user.dir")))
       } catch {
         case e: Exception => {
           status = "FAIL"
