@@ -26,7 +26,7 @@ object FileRunner {
 
     val targetDir = new File(appDir+"/code-target/"+codeEntity.id)
     val fileName = targetDir.listFiles().filterNot(_.getName.contains("$"))(0).getName
-    val process = Process(CommandCreator.createCommand("scala ") +fileName.replace(".class", ""), targetDir)
+    val process = Process(CommandCreator.createCommand("scala")+fileName.replace(".class", ""), targetDir)
     var outputList = List[String]()
     var errorList = List[String]()
     val exitCode = process ! ProcessLogger((s) => outputList ::= s, (s) => errorList ::= s)
@@ -60,7 +60,7 @@ object CommandCreator {
     if (os.toLowerCase().contains("win")) {
       return commandName + ".bat "
     }else {
-      return commandName;
+      return commandName+" ";
     }
   }
 

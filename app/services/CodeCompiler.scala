@@ -36,9 +36,10 @@ class CodeCompiler(codeEntityParam: CodeEntity , appWorkingDir: File) {
       println("Code compiled, returned file compiled class name")
       return matchingFiles(1)
     }
-    else
+    else{
       println("compilation failed")
       return null
+    }
   }
   
 }
