@@ -65,7 +65,7 @@ class CodeController @Inject() extends Controller{
   
   
       /**
-      * POST /code/batchUpload endpoint
+      *
       *
       * @author Dawid Zych
       *
@@ -105,10 +105,7 @@ class CodeController @Inject() extends Controller{
       }
     }
     /**
-      * POST /code/upload endpoint
-      *
-      * @author Michał Suski
-      *
+      * @author Dawid Zych
       */
     case class Result(status: String, message: String, codeID: String, output: JsArray, similarities: JsValue)
   
@@ -122,7 +119,7 @@ class CodeController @Inject() extends Controller{
     )
     }
     /**
-      * POST /code/upload endpoint
+      * POST /code/batchUpload endpoint
       *
       * @author Dawid Zych
       *
